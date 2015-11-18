@@ -255,13 +255,13 @@ char* ClassInfoManager::GetFixedClassName(const char* orig)
 		return "int";
 	else if (!strcmp(orig, "Int64"))
 		return "long";
-	else if (!strcmp(orig, "UInt8"))
+	else if (!strcmp(orig, "Uint8"))
 		return "unsigned char";
-	else if (!strcmp(orig, "UInt16"))
+	else if (!strcmp(orig, "Uint16"))
 		return "unsigned short";
-	else if (!strcmp(orig, "UInt32"))
+	else if (!strcmp(orig, "Uint32"))
 		return "unsigned int";
-	else if (!strcmp(orig, "UInt64"))
+	else if (!strcmp(orig, "Uint64"))
 		return "unsigned long";
 	return (char*)orig;
 }
