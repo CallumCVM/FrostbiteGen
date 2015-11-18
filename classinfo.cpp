@@ -221,13 +221,13 @@ void ClassInfoManager::ResolveHeaders(std::vector<FieldInfo*> members, std::ofst
 			continue;
 		else if (!strcmp(m->typeInfo->typeInfo->name, "Int64"))
 			continue;
-		else if (!strcmp(m->typeInfo->typeInfo->name, "UInt8"))
+		else if (!strcmp(m->typeInfo->typeInfo->name, "Uint8"))
 			continue;
-		else if (!strcmp(m->typeInfo->typeInfo->name, "UInt16"))
+		else if (!strcmp(m->typeInfo->typeInfo->name, "Uint16"))
 			continue;
-		else if (!strcmp(m->typeInfo->typeInfo->name, "UInt32"))
+		else if (!strcmp(m->typeInfo->typeInfo->name, "Uint32"))
 			continue;
-		else if (!strcmp(m->typeInfo->typeInfo->name, "UInt64"))
+		else if (!strcmp(m->typeInfo->typeInfo->name, "Uint64"))
 			continue;
 
 		file << "#include \"" << m->typeInfo->typeInfo->name << ".h\"" << std::endl;
