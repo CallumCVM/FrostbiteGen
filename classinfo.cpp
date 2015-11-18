@@ -402,7 +402,7 @@ void ClassInfoManager::DumpEnumMembers(std::ofstream& file, TypeInfo* ti)
 
 		FieldInfoEnum* fie = (FieldInfoEnum*)fi;
 
-		file << "\t" << fie->name << " = " << std::hex << fie->value << "," << std::endl;
+		file << "\t" << fie->name << " = 0x" << std::hex << fie->value << "," << std::endl;
 	}
 }
 
