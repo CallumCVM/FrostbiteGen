@@ -87,7 +87,7 @@ void Log(const char* szText, ...)
 	char szTime[64];
 	sprintf(szTime, "[%02d:%02d:%02d] ", ti->tm_hour, ti->tm_min, ti->tm_sec);
 
-	fout << buf << std::endl;
+	fout << szTime << buf << std::endl;
 	fout.close();
 }
 
@@ -168,5 +168,5 @@ BOOL WINAPI DllMain(
 		MessageBox(0, "success", 0, 0);
 	}
 
-	return 0;
+	return TRUE;
 }

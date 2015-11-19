@@ -6,6 +6,12 @@
 #include "required.h"
 #include "structs.h"
 
+enum kTypes
+{
+	kType_Pointer	= 53,
+	kType_Array		= 65
+};
+
 class ClassInfoManager
 {
 public:
@@ -29,6 +35,7 @@ private:
 	void	ParseStructMembers(TypeInfo* ti, std::vector<FieldInfo*>& members);
 
 	void	DumpTypeInfo(ClassInfo* c,std::ofstream& file);
+	void	DumpHeader(std::ofstream& file, const char* fileName);
 
 private:
 	ClassInfo* m_listHead;

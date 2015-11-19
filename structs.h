@@ -22,12 +22,8 @@ public:
 			DWORD_PTR dwOffset = *(DWORD*)(dwMatch + 3);
 
 			BYTE* first = (BYTE*)&dwOffset;
-			Log("First 0x%x", first[3]);
 			if (first[3] == 0xFF)
-			{
-				Log("Reverse shit");
 				dwOffset = dwOffset + 0xFFFFFFFF00000000;
-			}
 
 			DWORD_PTR dwOffset2 = (dwMatch + 7);
 

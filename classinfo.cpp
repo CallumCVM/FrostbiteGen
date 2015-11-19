@@ -110,6 +110,8 @@ void ClassInfoManager::DumpClass(ClassInfo* c)
 	if (!file.is_open())
 		return;	
 
+	DumpHeader(file, headerFile);
+
 #ifdef _DEBUG
 	Log("Dumping class %s 0x%016llX", ti->name, c);
 	Log("\tFlags: %d", ti->flags);
@@ -322,8 +324,18 @@ int ClassInfoManager::DumpClassMembers(std::ofstream& file, std::vector<FieldInf
 		
 		MemberTypeInfo* fti = fi->typeInfo;
 
-		if(fti->typeInfo->flags == 53) // pointer
-			file << "\t" << GetFixedClassName(fti->typeInfo->name) << "* m_" << fi->name << "; // 0x" << std::hex << fi->offset << std::endl;
+		TypeInfo* ti = fti->typeInfo;
+
+		if(ti->flags == kType_Pointer) // pointer
+			file << "\t" << GetFixedClassName(ti->name) << "* m_" << fi->name << "; // 0x" << std::hex << fi->offset << std::endl;
+		else if (ti->flags == kType_Array) // array
+		{
+			TypeInfo* ati = *(TypeInfo**)ti->enumFields;
+			if(ati->flags == kType_Pointer)
+				file << "\tArray<" << GetFixedClassName(ati->name) << "*> m_" << fi->name << "; // 0x" << std::hex << fi->offset << std::endl;
+			else
+				file << "\tArray<" << GetFixedClassName(ati->name) << "> m_" << fi->name << "; // 0x" << std::hex << fi->offset << std::endl;
+		}
 		else
 			file << "\t" << GetFixedClassName(fti->typeInfo->name) << " m_" << fi->name << "; // 0x" << std::hex << fi->offset << std::endl;
 
@@ -356,6 +368,8 @@ void ClassInfoManager::DumpEnum(ClassInfo* c)
 
 	if (!file.is_open())
 		return;
+
+	DumpHeader(file, headerFile);
 
 #ifdef _DEBUG
 	Log("Dumping enum %s 0x%016llX", ti->name, c);
@@ -477,6 +491,8 @@ void ClassInfoManager::DumpStruct(ClassInfo* c)
 	if (!file.is_open())
 		return;
 
+	DumpHeader(file, headerFile);
+
 #ifdef _DEBUG
 	Log("Dumping struct %s 0x%016llX", ti->name, c);
 	Log("\tFlags: %d", ti->flags);
@@ -526,6 +542,17 @@ void ClassInfoManager::DumpTypeInfo(ClassInfo* c, std::ofstream& file)
 {
 	file << "\tstatic void* GetTypeInfo()" << std::endl;
 	file << "\t{" << std::endl;
-	file << "\t\treturn (void*)0x" << std::hex << c << std::endl;
+	file << "\t\treturn (void*)0x" << std::hex << c << ";" << std::endl;
 	file << "\t}" << std::endl;
+}
+
+void ClassInfoManager::DumpHeader(std::ofstream& file,const char* fileName)
+{
+	std::time_t result = std::time(0);
+
+	file << "//" << std::endl;
+	file << "// Generated with FrostbiteGen by Chod" << std::endl;
+	file << "// File: " << fileName << std::endl;
+	file << "// Created: " << std::asctime(std::localtime(&result)) << std::endl << "//" << std::endl;
+
 }

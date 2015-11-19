@@ -14,6 +14,7 @@
 #include <iostream>
 #include <functional>
 #include <algorithm>
+#include <ctime>
 
 void Log(const char* szText, ...);
 void GetDirFile(const char* file, char* out, size_t len);
