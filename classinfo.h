@@ -30,6 +30,8 @@ private:
 	void	DumpStruct(ClassInfo* c);
 	void	ParseStructMembers(TypeInfo* ti, std::vector<FieldInfo*>& members);
 
+	void	DumpTemplateClass(ClassInfo* c);
+
 	void	DumpTypeInfo(ClassInfo* c,std::ofstream& file);
 	void	DumpHeader(std::ofstream& file, const char* fileName);
 

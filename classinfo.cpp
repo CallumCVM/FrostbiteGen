@@ -66,12 +66,13 @@ void ClassInfoManager::DumpClasses()
 			ti->flags == 49517 || ti->flags == 16765 || ti->flags == 49341 || ti->flags == 49437 || ti->flags == 49405 || ti->flags == 49373 || ti->flags == 49501 ||
 			ti->flags == 49485 || ti->flags == 49469 || ti->flags == 16541 || ti->flags == 16509 || ti->flags == 49325)
 		{
-			// data types
+			Log("Found data type: %s, size = %d", ti->name, ti->totalSize);
 		}
 		else if (ti->flags == 69)
 		{
 			// templates classes?
 			//DumpClass(c);
+			DumpStruct(c);
 		}
 		else if (ti->flags == 29)
 		{
@@ -231,6 +232,8 @@ void ClassInfoManager::ResolveHeaders(std::vector<FieldInfo*> members, std::ofst
 			continue;
 		else if (!strcmp(m->typeInfo->typeInfo->name, "Uint64"))
 			continue;
+		else if (!strcmp(m->typeInfo->typeInfo->name, "CString"))
+			continue;
 		else if (m->typeInfo->typeInfo->flags == kType_Array)
 		{
 			file << "#include \"Array.h\"" << std::endl;
@@ -270,6 +273,8 @@ char* ClassInfoManager::GetFixedClassName(const char* orig)
 		return "unsigned int";
 	else if (!strcmp(orig, "Uint64"))
 		return "unsigned long";
+	else if (!strcmp(orig, "CString"))
+		return "const char*";
 	return (char*)orig;
 }
 
@@ -561,4 +566,96 @@ void ClassInfoManager::DumpHeader(std::ofstream& file,const char* fileName)
 	file << "// File: " << fileName << std::endl;
 	file << "// Created: " << std::asctime(std::localtime(&result)) << "//" << std::endl;
 
+}
+
+void ClassInfoManager::DumpTemplateClass(ClassInfo* c)
+{
+	TypeInfo* ti = c->typeInfo;
+	if (!ti)
+		return;
+
+	if (strlen(ti->name) == 0)
+		return;
+
+	//std::vector<ClassInfo*> parents = GetParents(c);
+
+	char headerFile[128], headerPath[MAX_PATH];
+	sprintf(headerFile, "SDK\\%s.h", c->typeInfo->name);
+
+	GetDirFile(headerFile, headerPath, sizeof(headerPath));
+
+	std::ofstream file;
+	file.open(headerPath, std::ios::out | std::ios::trunc);
+
+	if (!file.is_open())
+		return;
+
+	DumpHeader(file, headerFile);
+
+#ifdef _DEBUG
+	Log("Dumping class %s 0x%016llX", ti->name, c);
+	Log("\tFlags: %d", ti->flags);
+	Log("\tSize: %d", ti->totalSize);
+	Log("\tAlignment: %d", ti->alignment);
+	Log("\tField count: %d", ti->fieldCount);
+	Log("\tEnum: 0x%016llX", ti->enumFields);
+	Log("\tFields: 0x%016llX", ti->fields);
+	Log("\tParent 0x%016llX", c->parent);
+	Log("\tisDataContainer %d", c->isDataContainer);
+#endif
+
+	// print the header
+	file << std::endl << "#ifndef FBGEN_" << c->typeInfo->name << "_H" << std::endl;
+	file << "#define FBGEN_" << c->typeInfo->name << "_H" << std::endl << std::endl;
+
+	std::vector<FieldInfo*> members;
+	ParseClassMembers(ti, members);
+	ResolveHeaders(members, file);
+
+	//if (parents.size() > 0)
+	//{
+	//	file << "#include \"" << parents.at(0)->typeInfo->name << ".h\"" << std::endl << std::endl;
+
+	//	file << "class " << ti->name << " :" << std::endl;
+	//	DWORD inheritedOffset = 0;
+
+	//	// can do multiple inheritence here instead, cleaner not to though
+	//	//for (int i = parents.size() - 1; i >= 0; i--)
+	//	{
+	//		ClassInfo* p = parents.at(0);
+	//		//if (i > 0)
+	//		//	file << "\tpublic " << p->typeInfo->name << ", // Inherited class at 0x" << std::hex << inheritedOffset << std::endl;
+	//		//else
+	//		file << "\tpublic " << p->typeInfo->name << " // size = 0x" << std::hex << p->typeInfo->totalSize << std::endl;
+
+	//		inheritedOffset += p->typeInfo->totalSize;
+	//	}
+	//}
+	//else
+	{
+		file << "class " << ti->name << std::endl;
+	}
+
+	file << "{" << std::endl;
+	file << "public:" << std::endl;
+
+	DumpTypeInfo(c, file);
+
+	int totalSizeOfClass = ti->totalSize;
+	int totalSizeOfParents = 0;
+	//if (parents.size() > 0)
+	//{
+	//	//for (auto p : parents)
+	//	totalSizeOfParents += parents.at(0)->typeInfo->totalSize;
+	//}
+
+	int memberSize = DumpClassMembers(file, members, totalSizeOfParents);
+	if (memberSize + totalSizeOfParents < totalSizeOfClass)
+		file << "\tunsigned char _0x" << std::hex << (memberSize + totalSizeOfParents) << "[0x" << std::hex << (totalSizeOfClass - (memberSize + totalSizeOfParents)) << "];" << std::endl;
+
+	file << "}; // size = 0x" << std::hex << totalSizeOfClass << std::endl << std::endl;
+
+	file << "#endif // FBGEN_" << c->typeInfo->name << "_H" << std::endl;
+
+	file.close();
 }
