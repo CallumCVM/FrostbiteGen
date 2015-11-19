@@ -116,7 +116,7 @@ void ClassInfoManager::DumpClass(ClassInfo* c)
 	Log("\tSize: %d", ti->totalSize);
 	Log("\tAlignment: %d", ti->alignment);
 	Log("\tField count: %d", ti->fieldCount);
-	Log("\tUnknown1: 0x%016llX", ti->unknown1);
+	Log("\tEnum: 0x%016llX", ti->enumFields);
 	Log("\tFields: 0x%016llX", ti->fields);
 	Log("\tParent 0x%016llX", c->parent);
 	Log("\tisDataContainer %d", c->isDataContainer);
@@ -322,7 +322,7 @@ int ClassInfoManager::DumpClassMembers(std::ofstream& file, std::vector<FieldInf
 		
 		MemberTypeInfo* fti = fi->typeInfo;
 
-		if(fti->flags == 2527) // pointer
+		if(fti->typeInfo->flags == 53) // pointer
 			file << "\t" << GetFixedClassName(fti->typeInfo->name) << "* m_" << fi->name << "; // 0x" << std::hex << fi->offset << std::endl;
 		else
 			file << "\t" << GetFixedClassName(fti->typeInfo->name) << " m_" << fi->name << "; // 0x" << std::hex << fi->offset << std::endl;
@@ -363,7 +363,7 @@ void ClassInfoManager::DumpEnum(ClassInfo* c)
 	Log("\tSize: %d", ti->totalSize);
 	Log("\tAlignment: %d", ti->alignment);
 	Log("\tField count: %d", ti->fieldCount);
-	Log("\tUnknown1: 0x%016llX", ti->unknown1);
+	Log("\tEnum: 0x%016llX", ti->enumFields);
 	Log("\tFields: 0x%016llX", ti->fields);
 	Log("\tParent 0x%016llX", c->parent);
 	Log("\tisDataContainer %d", c->isDataContainer);
@@ -483,7 +483,7 @@ void ClassInfoManager::DumpStruct(ClassInfo* c)
 	Log("\tSize: %d", ti->totalSize);
 	Log("\tAlignment: %d", ti->alignment);
 	Log("\tField count: %d", ti->fieldCount);
-	Log("\tUnknown1: 0x%016llX", ti->unknown1);
+	Log("\tEnum: 0x%016llX", ti->enumFields);
 	Log("\tFields: 0x%016llX", ti->fields);
 	Log("\tParent 0x%016llX", c->parent);
 	Log("\tisDataContainer %d", c->isDataContainer);

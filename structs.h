@@ -21,8 +21,13 @@ public:
 
 			DWORD_PTR dwOffset = *(DWORD*)(dwMatch + 3);
 
-			if(*(BYTE*)&dwOffset == 0xFF )
+			BYTE* first = (BYTE*)&dwOffset;
+			Log("First 0x%x", first[3]);
+			if (first[3] == 0xFF)
+			{
+				Log("Reverse shit");
 				dwOffset = dwOffset + 0xFFFFFFFF00000000;
+			}
 
 			DWORD_PTR dwOffset2 = (dwMatch + 7);
 
@@ -90,9 +95,9 @@ enum TypeFlags
 class MemberTypeInfo
 {
 public:
-	TypeInfo* typeInfo;
-	char pad[0x8];
+	TypeInfo* typeInfo;	
 	unsigned short flags;
+	char pad[0x8];
 };
 
 class FieldInfo
