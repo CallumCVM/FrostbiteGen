@@ -231,6 +231,11 @@ void ClassInfoManager::ResolveHeaders(std::vector<FieldInfo*> members, std::ofst
 			continue;
 		else if (!strcmp(m->typeInfo->typeInfo->name, "Uint64"))
 			continue;
+		else if (m->typeInfo->typeInfo->flags == kType_Array)
+		{
+			file << "#include \"Array.h\"" << std::endl;
+			continue;
+		}
 
 		file << "#include \"" << m->typeInfo->typeInfo->name << ".h\"" << std::endl;
 	}
