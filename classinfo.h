@@ -6,11 +6,7 @@
 #include "required.h"
 #include "structs.h"
 
-enum kTypes
-{
-	kType_Pointer	= 53,
-	kType_Array		= 65
-};
+
 
 class ClassInfoManager
 {

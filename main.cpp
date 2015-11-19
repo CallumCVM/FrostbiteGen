@@ -168,5 +168,5 @@ BOOL WINAPI DllMain(
 		MessageBox(0, "success", 0, 0);
 	}
 
-	return TRUE;
+	return 0;
 }

@@ -7,6 +7,12 @@ class FieldInfo;
 
 DWORD_PTR FindPattern(DWORD_PTR dwAddress, DWORD_PTR dwLen, DWORD_PTR offset, bool deref, BYTE *bMask, char * szMask);
 
+enum kTypes
+{
+	kType_Pointer = 53,
+	kType_Array = 65
+};
+
 class ClassInfo
 {
 public:
@@ -99,6 +105,24 @@ public:
 class FieldInfo
 {
 public:
+	int GetFieldSize()
+	{
+		if (!typeInfo)
+			return 0;
+		TypeInfo* ti = typeInfo->typeInfo;
+		switch (ti->flags)
+		{
+		case kType_Pointer:
+			return 8;
+			
+		case kType_Array:
+			return 8;
+
+		default:
+			return ti->totalSize;
+		}
+	}
+
 	char* name;
 	MemberInfoFlags flags;
 	unsigned short offset;

@@ -305,19 +305,20 @@ int ClassInfoManager::DumpClassMembers(std::ofstream& file, std::vector<FieldInf
 
 	bool first = true;	
 
+	int lastOffset = parentSize;
+
 	for (int i = 0; i < members.size(); ++i)
 	{
 		FieldInfo* fi = members.at(i);
 
-		if (first)
+		//if (first)
 		{
-			//totalSize = fi->offset;
-
-			if (fi->offset > parentSize)
+			if (fi->offset > lastOffset)
 			{
-				file << "\tunsigned char _0x" << std::hex << parentSize << "[0x" << std::hex << (fi->offset - parentSize) << "];" << std::endl;
-				totalSize += fi->offset - parentSize;
+				file << "\tunsigned char _0x" << std::hex << lastOffset << "[0x" << std::hex << (fi->offset - lastOffset) << "];" << std::endl;
+				totalSize += fi->offset - lastOffset;				
 			}
+			lastOffset = fi->offset + fi->GetFieldSize();
 			
 			first = false;
 		}
@@ -339,7 +340,7 @@ int ClassInfoManager::DumpClassMembers(std::ofstream& file, std::vector<FieldInf
 		else
 			file << "\t" << GetFixedClassName(fti->typeInfo->name) << " m_" << fi->name << "; // 0x" << std::hex << fi->offset << std::endl;
 
-		totalSize += fti->typeInfo->totalSize;
+		totalSize += fi->GetFieldSize();
 	}
 
 	return totalSize;
@@ -553,6 +554,6 @@ void ClassInfoManager::DumpHeader(std::ofstream& file,const char* fileName)
 	file << "//" << std::endl;
 	file << "// Generated with FrostbiteGen by Chod" << std::endl;
 	file << "// File: " << fileName << std::endl;
-	file << "// Created: " << std::asctime(std::localtime(&result)) << std::endl << "//" << std::endl;
+	file << "// Created: " << std::asctime(std::localtime(&result)) << "//" << std::endl;
 
 }
